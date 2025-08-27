@@ -10,6 +10,10 @@ services:
         generateValue: true
       - key: BASE_URL
         value: https://chatcode.su
+      - key: DB_URL
+        fromDatabase:
+          name: chatcode-db
+          property: connectionString
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GOOGLE_CLIENT_SECRET
@@ -18,7 +22,8 @@ services:
         sync: false
       - key: GITHUB_CLIENT_SECRET
         sync: false
-    disk:
-      name: chatcode-disk
-      mountPath: /opt/render/project/src
-      sizeGB: 1
+databases:
+  - name: chatcode-db
+    databaseName: chatcode_db
+    user: chatcode_user
+    plan: free

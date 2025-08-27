@@ -55,8 +55,23 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ---------------------- Config ----------------------
-DB_URL = "sqlite:///qr.db"
-engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
+# Database configuration with PostgreSQL support
+DB_URL = os.getenv("DB_URL", "sqlite:///qr.db")
+
+# Configure engine based on database type
+if DB_URL.startswith("postgresql://") or DB_URL.startswith("postgres://"):
+    # PostgreSQL configuration
+    engine = create_engine(
+        DB_URL,
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        echo=False  # Set to True for SQL debugging
+    )
+else:
+    # SQLite configuration (fallback for development)
+    engine = create_engine(DB_URL, connect_args={"check_same_thread": False})
 
 pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 APP_SECRET = os.getenv("APP_SECRET", "dev-secret-change-me")
