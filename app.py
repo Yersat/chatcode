@@ -1339,6 +1339,19 @@ def page(title: str, body_html: str, user: User | None = None) -> HTMLResponse:
 
       gtag('config', 'G-XXNW8XBFCR');
     </script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){{
+            m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {{if (document.scripts[j].src === r) {{ return; }}}}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        }})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103929862', 'ym');
+
+        ym(103929862, 'init', {{ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true}});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103929862" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
     <title>{title}</title>{BASE_STYLE}</head>
     <body><div class=wrap><div class=card>{nav}{body_html}</div><p class=note>Tip: Share your QR as a PNG or print it on cards. The QR encodes the official <code>wa.me</code> link so it opens WhatsApp immediately.</p></div></body></html>
     """
@@ -1413,6 +1426,19 @@ def admin_page(title: str, body_html: str, current_page: str = "", admin_user: U
 
       gtag('config', 'G-XXNW8XBFCR');
     </script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){{
+            m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {{if (document.scripts[j].src === r) {{ return; }}}}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        }})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103929862', 'ym');
+
+        ym(103929862, 'init', {{ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true}});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103929862" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
     <title>{title}</title>{BASE_STYLE}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
@@ -1530,6 +1556,19 @@ def landing_page(title: str, body_html: str) -> HTMLResponse:
 
       gtag('config', 'G-XXNW8XBFCR');
     </script>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){{
+            m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {{if (document.scripts[j].src === r) {{ return; }}}}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        }})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103929862', 'ym');
+
+        ym(103929862, 'init', {{ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true}});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/103929862" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
     <title>{title}</title>{BASE_STYLE}</head>
     <body>{nav}{body_html}{additional_sections}</body></html>
     """
