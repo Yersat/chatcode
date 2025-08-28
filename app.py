@@ -145,15 +145,32 @@ oauth = OAuth()
 
 # Configure Google OAuth
 if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
-    oauth.register(
-        name='google',
-        client_id=GOOGLE_CLIENT_ID,
-        client_secret=GOOGLE_CLIENT_SECRET,
-        server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
-        client_kwargs={
-            'scope': 'openid email profile'
-        }
-    )
+    try:
+        oauth.register(
+            name='google',
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
+            client_kwargs={
+                'scope': 'openid email profile'
+            }
+        )
+        print("✓ Google OAuth configured successfully")
+    except Exception as e:
+        print(f"⚠ Google OAuth configuration failed: {e}")
+        # Fallback to manual configuration
+        oauth.register(
+            name='google',
+            client_id=GOOGLE_CLIENT_ID,
+            client_secret=GOOGLE_CLIENT_SECRET,
+            access_token_url='https://oauth2.googleapis.com/token',
+            authorize_url='https://accounts.google.com/o/oauth2/auth',
+            api_base_url='https://www.googleapis.com/',
+            client_kwargs={
+                'scope': 'openid email profile'
+            }
+        )
+        print("✓ Google OAuth configured with manual endpoints")
 
 # Configure GitHub OAuth
 if GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET:
@@ -182,8 +199,17 @@ def create_session_cookie(user_id: int) -> str:
 def read_session_cookie(value: str) -> int | None:
     try:
         raw = signer.unsign(value, max_age=60*60*24*30).decode()  # 30 days
-        return int(raw)
+        # Check if the raw value looks like a user ID (should be numeric)
+        if raw.isdigit():
+            return int(raw)
+        else:
+            # This might be OAuth state or other data, not a user ID
+            print(f"Session cookie contains non-numeric data: {raw[:50]}...")
+            return None
     except BadSignature:
+        return None
+    except ValueError as e:
+        print(f"Session cookie parsing error: {e}")
         return None
 
 # OAuth state management
@@ -311,6 +337,10 @@ def get_current_user(request: Request) -> User | None:
             return None
         user_id = read_session_cookie(cookie)
         if not user_id:
+            return None
+        # Ensure user_id is an integer
+        if not isinstance(user_id, int):
+            print(f"Session error: user_id is not an integer: {user_id}")
             return None
         with Session(engine) as s:
             return s.get(User, user_id)
