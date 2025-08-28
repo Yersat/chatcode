@@ -1471,6 +1471,33 @@ def landing_page(title: str, body_html: str) -> HTMLResponse:
     return HTMLResponse(content=html)
 
 # ---------------------- Routes ----------------------
+@app.get("/health")
+def health_check():
+    """Health check endpoint for debugging deployment issues"""
+    try:
+        # Test database connection
+        with Session(engine) as s:
+            from sqlmodel import text
+            s.exec(text("SELECT 1")).first()
+        db_status = "OK"
+    except Exception as e:
+        db_status = f"ERROR: {str(e)}"
+
+    # Check OAuth configuration
+    oauth_config = {
+        "google_configured": bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET),
+        "github_configured": bool(GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET),
+        "base_url": BASE_URL,
+        "app_secret_set": bool(APP_SECRET != "dev-secret-change-me")
+    }
+
+    return {
+        "status": "healthy" if db_status == "OK" else "unhealthy",
+        "database": db_status,
+        "oauth": oauth_config,
+        "environment": "production" if BASE_URL.startswith("https://") else "development"
+    }
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     user = get_current_user(request)
