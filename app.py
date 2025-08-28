@@ -132,7 +132,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Add session middleware for OAuth state management
 from starlette.middleware.sessions import SessionMiddleware
-app.add_middleware(SessionMiddleware, secret_key=APP_SECRET)
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=APP_SECRET,
+    max_age=60*60*24*30,  # 30 days
+    same_site='lax',
+    https_only=BASE_URL.startswith('https://')
+)
 
 # OAuth client setup
 oauth = OAuth()
@@ -143,9 +149,7 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
         name='google',
         client_id=GOOGLE_CLIENT_ID,
         client_secret=GOOGLE_CLIENT_SECRET,
-        access_token_url='https://oauth2.googleapis.com/token',
-        authorize_url='https://accounts.google.com/o/oauth2/auth',
-        api_base_url='https://www.googleapis.com/',
+        server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
         client_kwargs={
             'scope': 'openid email profile'
         }
@@ -301,14 +305,19 @@ def find_or_create_social_user(provider: str, social_id: str, user_info: dict, e
         return new_user
 
 def get_current_user(request: Request) -> User | None:
-    cookie = request.cookies.get("session")
-    if not cookie:
+    try:
+        cookie = request.cookies.get("session")
+        if not cookie:
+            return None
+        user_id = read_session_cookie(cookie)
+        if not user_id:
+            return None
+        with Session(engine) as s:
+            return s.get(User, user_id)
+    except Exception as e:
+        # Log session error but don't crash the app
+        print(f"Session error: {str(e)}")
         return None
-    user_id = read_session_cookie(cookie)
-    if not user_id:
-        return None
-    with Session(engine) as s:
-        return s.get(User, user_id)
 
 def get_admin_user(request: Request) -> User | None:
     """Get current user if they are an admin"""
