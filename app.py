@@ -86,6 +86,23 @@ GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 # Base URL for OAuth callbacks (set this to your domain in production)
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
 
+# ---------------------- Viral Marketing ----------------------
+VIRAL_MARKETING_MESSAGE = """Hi. Nice to meet you.
+
+Get QR for free at https://chatcode.su"""
+
+def get_viral_message_with_preset(preset_text: str | None) -> str:
+    """
+    Combines user's preset text with viral marketing message.
+    Always includes the viral marketing message for maximum exposure.
+    """
+    if preset_text and preset_text.strip():
+        # User has custom message - append viral marketing message
+        return f"{preset_text.strip()}\n\n{VIRAL_MARKETING_MESSAGE}"
+    else:
+        # No custom message - use viral marketing message as default
+        return VIRAL_MARKETING_MESSAGE
+
 # ---------------------- Models ----------------------
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -1655,6 +1672,9 @@ def register_form(request: Request):
       </div>
       <button>Create</button>
     </form>
+    <p class=note style='background: var(--card-hover); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 16px;'>
+      <strong>📢 Viral Marketing:</strong> All QR codes include our promotional message to help grow ChatCode. Your custom message appears first, followed by: "Hi. Nice to meet you. Get QR for free at https://chatcode.su"
+    </p>
     <p class=muted>Already have an account? <a href='/login'>Sign in</a></p>
     """)
 
@@ -1888,14 +1908,18 @@ def dashboard(request: Request):
           </div>
           <button>Create QR Code</button>
         </form>
+        <p class=note style='background: var(--card-hover); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 16px;'>
+          <strong>📢 Viral Marketing Feature:</strong> Your QR codes will automatically include our promotional message to help spread ChatCode to new users. Your custom message (if any) will appear first, followed by: "Hi. Nice to meet you. Get QR for free at https://chatcode.su"
+        </p>
         """
         return page("Setup", body, user=user)
 
     # Normal dashboard for users with phone numbers
     link = f"https://wa.me/{user.phone_e164.lstrip('+')}"
-    if user.preset_text:
-        import urllib.parse
-        link += "?text=" + urllib.parse.quote(user.preset_text)
+    # Always include viral marketing message with any preset text
+    viral_message = get_viral_message_with_preset(user.preset_text)
+    import urllib.parse
+    link += "?text=" + urllib.parse.quote(viral_message)
 
     # Profile section for social auth users
     profile_section = ""
@@ -1937,6 +1961,9 @@ def dashboard(request: Request):
           <button>Save</button>
         </form>
         <p class=note>Anyone scanning your QR will be taken to this link and can message you immediately in WhatsApp.</p>
+        <p class=note style='background: var(--card-hover); padding: 12px; border-radius: 8px; border-left: 4px solid var(--accent); margin-top: 12px;'>
+          <strong>📢 Viral Marketing:</strong> All QR codes automatically include our promotional message: "Hi. Nice to meet you. Get QR for free at https://chatcode.su" - helping you share ChatCode with new users!
+        </p>
       </div>
     </div>
     """
@@ -1963,9 +1990,10 @@ def qr_png(u: str, download: int | None = None):
         if not user:
             raise HTTPException(404, "User not found")
         link = f"https://wa.me/{user.phone_e164.lstrip('+')}"
-        if user.preset_text:
-            import urllib.parse
-            link += "?text=" + urllib.parse.quote(user.preset_text)
+        # Always include viral marketing message with any preset text
+        viral_message = get_viral_message_with_preset(user.preset_text)
+        import urllib.parse
+        link += "?text=" + urllib.parse.quote(viral_message)
         img = qrcode.make(link)
         buff = BytesIO()
         img.save(buff, format="PNG"); buff.seek(0)
@@ -1981,9 +2009,10 @@ def public_qr(username: str):
         if not user:
             raise HTTPException(404, "User not found")
     link = f"https://wa.me/{user.phone_e164.lstrip('+')}"
-    if user.preset_text:
-        import urllib.parse
-        link += "?text=" + urllib.parse.quote(user.preset_text)
+    # Always include viral marketing message with any preset text
+    viral_message = get_viral_message_with_preset(user.preset_text)
+    import urllib.parse
+    link += "?text=" + urllib.parse.quote(viral_message)
     body = f"""
     <h1>Chat on WhatsApp</h1>
     <p class=muted>Scan this QR or tap the button to start a WhatsApp chat.</p>
