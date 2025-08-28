@@ -60,7 +60,13 @@ DB_URL = os.getenv("DB_URL", "sqlite:///qr.db")
 
 # Configure engine based on database type
 if DB_URL.startswith("postgresql://") or DB_URL.startswith("postgres://"):
-    # PostgreSQL configuration
+    # PostgreSQL configuration with asyncpg
+    # Convert postgres:// to postgresql+asyncpg:// if needed
+    if DB_URL.startswith("postgres://"):
+        DB_URL = DB_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif DB_URL.startswith("postgresql://"):
+        DB_URL = DB_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
     engine = create_engine(
         DB_URL,
         pool_size=10,
