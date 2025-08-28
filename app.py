@@ -1336,6 +1336,7 @@ def page(title: str, body_html: str, user: User | None = None) -> HTMLResponse:
       window.dataLayer = window.dataLayer || [];
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
+
       gtag('config', 'G-XXNW8XBFCR');
     </script>
     <title>{title}</title>{BASE_STYLE}</head>
@@ -1409,6 +1410,7 @@ def admin_page(title: str, body_html: str, current_page: str = "", admin_user: U
       window.dataLayer = window.dataLayer || [];
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
+
       gtag('config', 'G-XXNW8XBFCR');
     </script>
     <title>{title}</title>{BASE_STYLE}
@@ -1525,6 +1527,7 @@ def landing_page(title: str, body_html: str) -> HTMLResponse:
       window.dataLayer = window.dataLayer || [];
       function gtag(){{dataLayer.push(arguments);}}
       gtag('js', new Date());
+
       gtag('config', 'G-XXNW8XBFCR');
     </script>
     <title>{title}</title>{BASE_STYLE}</head>
