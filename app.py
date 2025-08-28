@@ -140,10 +140,11 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 from starlette.middleware.sessions import SessionMiddleware
 app.add_middleware(
     SessionMiddleware,
-    secret_key=APP_SECRET,
+    secret_key=APP_SECRET + "_oauth",  # Use different secret for OAuth sessions
     max_age=60*60*24*30,  # 30 days
     same_site='lax',
-    https_only=BASE_URL.startswith('https://')
+    https_only=BASE_URL.startswith('https://'),
+    session_cookie="oauth_session"  # Use different cookie name for OAuth
 )
 
 # OAuth client setup
@@ -152,19 +153,7 @@ oauth = OAuth()
 # Configure Google OAuth
 if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
     try:
-        oauth.register(
-            name='google',
-            client_id=GOOGLE_CLIENT_ID,
-            client_secret=GOOGLE_CLIENT_SECRET,
-            server_metadata_url='https://accounts.google.com/.well-known/openid_configuration',
-            client_kwargs={
-                'scope': 'openid email profile'
-            }
-        )
-        print("✓ Google OAuth configured successfully")
-    except Exception as e:
-        print(f"⚠ Google OAuth configuration failed: {e}")
-        # Fallback to manual configuration
+        # Use manual configuration to avoid OpenID discovery issues
         oauth.register(
             name='google',
             client_id=GOOGLE_CLIENT_ID,
@@ -172,11 +161,16 @@ if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
             access_token_url='https://oauth2.googleapis.com/token',
             authorize_url='https://accounts.google.com/o/oauth2/auth',
             api_base_url='https://www.googleapis.com/',
+            userinfo_endpoint='https://www.googleapis.com/oauth2/v2/userinfo',
             client_kwargs={
                 'scope': 'openid email profile'
             }
         )
-        print("✓ Google OAuth configured with manual endpoints")
+        print("✓ Google OAuth configured successfully")
+    except Exception as e:
+        print(f"⚠ Google OAuth configuration failed: {e}")
+        # This shouldn't happen with manual config, but just in case
+        print("✗ Google OAuth will not be available")
 
 # Configure GitHub OAuth
 if GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET:
@@ -210,12 +204,11 @@ def read_session_cookie(value: str) -> int | None:
             return int(raw)
         else:
             # This might be OAuth state or other data, not a user ID
-            print(f"Session cookie contains non-numeric data: {raw[:50]}...")
+            # Don't log this as it's expected during OAuth flows
             return None
     except BadSignature:
         return None
-    except ValueError as e:
-        print(f"Session cookie parsing error: {e}")
+    except ValueError:
         return None
 
 # OAuth state management
