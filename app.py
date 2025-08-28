@@ -1330,6 +1330,14 @@ def page(title: str, body_html: str, user: User | None = None) -> HTMLResponse:
     """
     html = f"""
     <html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXNW8XBFCR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-XXNW8XBFCR');
+    </script>
     <title>{title}</title>{BASE_STYLE}</head>
     <body><div class=wrap><div class=card>{nav}{body_html}</div><p class=note>Tip: Share your QR as a PNG or print it on cards. The QR encodes the official <code>wa.me</code> link so it opens WhatsApp immediately.</p></div></body></html>
     """
@@ -1395,6 +1403,14 @@ def admin_page(title: str, body_html: str, current_page: str = "", admin_user: U
 
     html = f"""
     <html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXNW8XBFCR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-XXNW8XBFCR');
+    </script>
     <title>{title}</title>{BASE_STYLE}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
@@ -1503,6 +1519,14 @@ def landing_page(title: str, body_html: str) -> HTMLResponse:
 
     html = f"""
     <html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXNW8XBFCR"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){{dataLayer.push(arguments);}}
+      gtag('js', new Date());
+      gtag('config', 'G-XXNW8XBFCR');
+    </script>
     <title>{title}</title>{BASE_STYLE}</head>
     <body>{nav}{body_html}{additional_sections}</body></html>
     """
