@@ -93,9 +93,7 @@ GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 BASE_URL = os.getenv("BASE_URL", "http://127.0.0.1:8000")
 
 # ---------------------- Viral Marketing ----------------------
-VIRAL_MARKETING_MESSAGE = """Hi. Nice to meet you.
-
-Get QR for free at https://chatcode.su"""
+VIRAL_MARKETING_MESSAGE = """Get QR for free at https://chatcode.su"""
 
 def get_viral_message_with_preset(preset_text: str | None) -> str:
     """
